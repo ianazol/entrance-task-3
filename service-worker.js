@@ -41,7 +41,7 @@ self.addEventListener('fetch', event => {
         response = caches.match(cacheKey)
             .then(cacheResponse => cacheResponse || fetchAndPutToCache(cacheKey, event.request));
     } else {
-        response = fetchWithFallbackToCache(event.request);
+        response = fetchAndPutToCache(cacheKey, event.request);
     }
 
     event.respondWith(response);
