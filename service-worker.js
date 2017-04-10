@@ -34,7 +34,7 @@ self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
 
     // Вопрос №3: для всех ли случаев подойдёт такое построение ключа?
-    const cacheKey = url.origin + url.pathname;
+    const cacheKey = url.origin + url.pathname + url.search;
 
     let response;
     if (needStoreForOffline(cacheKey)) {
