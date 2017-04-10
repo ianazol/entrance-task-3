@@ -11,6 +11,7 @@ importScripts('./vendor/kv-keeper.js-1.0.4/kv-keeper.js');
 
 self.addEventListener('install', event => {
     const promise = preCacheAllFavorites()
+        .then(() => preCacheStatic())
         // Вопрос №1: зачем нужен этот вызов?
         .then(() => self.skipWaiting())
         .then(() => console.log('[ServiceWorker] Installed!'));
@@ -53,6 +54,21 @@ self.addEventListener('message', event => {
     event.waitUntil(promise);
 });
 
+function preCacheStatic() {
+    return caches.open(CACHE_VERSION)
+        .then(function (cache) {
+            return cache.addAll([
+                './gifs.html',
+                './vendor/bem-components-dist-5.0.0/touch-phone/bem-components.dev.css',
+                './vendor/bem-components-dist-5.0.0/touch-phone/bem-components.dev.js',
+                './vendor/kv-keeper.js-1.0.4/kv-keeper.js',
+                './assets/blocks.js',
+                './assets/style.css',
+                './assets/templates.js',
+                'https://yastatic.net/jquery/3.1.0/jquery.min.js'
+            ]);
+        });
+}
 
 // Положить в новый кеш все добавленные в избранное картинки
 function preCacheAllFavorites() {
@@ -142,7 +158,7 @@ function fetchAndPutToCache(cacheKey, request) {
                 .then(() => response);
         })
         .catch(err => {
-            console.error('[ServiceWorker] Fetch error:', err);
+            console.log('[ServiceWorker] Fetch error:', err);
             return caches.match(cacheKey);
         });
 }
